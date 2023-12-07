@@ -1,57 +1,56 @@
-import React, {useState} from 'react';
-import { KeyboardAvoidingView, StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard } from 'react-native';
+import React, { useState } from 'react';
+import { KeyboardAvoidingView, StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard, FlatList,} from 'react-native';
 import Task from './components/Task';
 
 export default function App() {
   const [task, setTask] = useState();
-  const [taskItems,setTaskItems] = useState([]);
+  const [taskItems, setTaskItems] = useState([]);
 
   const handleAddTask = () => {
     Keyboard.dismiss();
-    setTaskItems([...taskItems, task])
-    setTask(null)
+    setTaskItems([...taskItems, task]);
+    setTask(null);
     console.log(task);
-  }
+  };
 
   const completeTask = (index) => {
     let itemsCopy = [...taskItems];
     itemsCopy.splice(index, 1);
     setTaskItems(itemsCopy);
-  }
+  };
+
+  const renderItem = ({ item, index }) => (
+    <TouchableOpacity onPress={() => completeTask(index)}>
+      <Task key={index} text={item} />
+    </TouchableOpacity>
+  );
 
   return (
     <View style={styles.container}>
-
       {/* Tareas de hoy */}
       <View style={styles.taskWrapper}>
         <Text style={styles.sectionTitle}>Tareas de hoy</Text>
 
-        <View style={styles.items}>
-          {/* Aqui van las tareas de hoy */}
-          {
-            taskItems.map((item, index) => {
-              return (
-                <TouchableOpacity key={index} onPress={() => completeTask (index)}>
-                  <Task key={index} text={item}/>
-                </TouchableOpacity>
-              )
-            })
-          }
-          {/* <Task text={'Task 1'} />
-          <Task text={'Task 2'} /> */}
-        </View>
-
+        <FlatList
+          data={taskItems}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={renderItem}
+        />
       </View>
-
 
       {/* Escribir una tarea */}
       <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.writeTaskWrapper}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.writeTaskWrapper}
       >
-        <TextInput style={styles.input} placeholder={'Escribe una tarea'} value={task} onChangeText={text => setTask(text)}/>
+        <TextInput
+          style={styles.input}
+          placeholder={'Escribe una tarea'}
+          value={task}
+          onChangeText={(text) => setTask(text)}
+        />
 
-        <TouchableOpacity onPress={() => handleAddTask ()}>
+        <TouchableOpacity onPress={() => handleAddTask()}>
           <View style={styles.addWrapper}>
             <Text style={styles.addText}>+</Text>
           </View>
